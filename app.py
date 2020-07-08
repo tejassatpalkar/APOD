@@ -1,35 +1,23 @@
 import tweepy
-import os, requests
+import os
+import requests
 import time
-
-from decouple import config
-
-def Setup():
-    temp = {"CONSUMER_KEY": config("CONSUMER_KEY"),
-            "CONSUMER_SECRET": config("CONSUMER_SECRET"),
-            "ACCESS_TOKEN": config("ACCESS_TOKEN"),
-            "ACCESS_TOKEN_SECRET": config("ACCESS_TOKEN_SECRET")
-            }
-    auth = tweepy.OAuthHandler(config("CONSUMER_KEY"), config("CONSUMER_SECRET"))
-    auth.set_access_token(config("ACCESS_TOKEN"), config("ACCESS_TOKEN_SECRET"))
-    api = tweepy.API(auth)
-    return api
 
 
 def makeTweet():
     # set the url and the message
     query = requests.get("https://api.nasa.gov/planetary/apod",
-                         params={"api_key": config("NASA"),
+                         params={"api_key": os.getenv("NASA"),
                                  "hd": True}).json()
     # From this json I must get the 'hdurl', media_type, 'title'
     media_type = query['media_type']
     if media_type == 'image':
-        print(query)
         title = query['title']
         url = query['hdurl']
         message = f"{title}: copyright: {query['copyright']} {query['explanation']}"
         message = message[:276]
         message += '...'
+        print(message)
         return url, message
     else:
         print("fail")
@@ -37,7 +25,11 @@ def makeTweet():
 
 
 def main():
-    api = Setup()
+    auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
+    auth.set_access_token(os.getenv("ACCESS_TOKEN"), os.getenv("ACCESS_TOKEN_SECRET"))
+    api = tweepy.API(auth)
+    print('authenticated (not actually tbh)')
+    
     INTERVAL = 60*60*24
     filename = 'temp.jpg'
     while True:
