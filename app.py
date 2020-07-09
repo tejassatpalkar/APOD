@@ -24,7 +24,7 @@ def makeTweet():
         return None
 
 
-def main():
+def tweet():
     auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
     auth.set_access_token(os.getenv("ACCESS_TOKEN"), os.getenv("ACCESS_TOKEN_SECRET"))
     api = tweepy.API(auth)
@@ -57,6 +57,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    tweet()
 
 
